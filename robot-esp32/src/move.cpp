@@ -74,35 +74,6 @@ SpeedMode Move::switchSpeedMode() {
     return currentSpeedMode;
 }
 
-
-#define PRAGMA(p...) _Pragma(#p)
-#define PRINT_ERROR_I(m...) PRAGMA(GCC error #m)
-#define PRINT_ERROR(m...) PRINT_ERROR_I(m)
-#define FX(f,x) f x
-#define MACRO_PUSH(m) DUMP(PRAGMA(push_macro(#m)))
-#define MACRO_POP(m) DUMP(PRAGMA(pop_macro(#m)))
-#define EAT(...)
-#define DUMP(v...) EAT(v)
-#define REVIVE(m) MACRO_PUSH(m)MACRO_POP(m)
-#define SCAN(v...) REVIVE(SCAN) v
-#define NIF_0(t,f...) REVIVE(NIF_0) t
-#define NIF_1(t,f...) REVIVE(NIF_0) f
-#define EMPTY_P(...) NIF_##__VA_OPT__(1)
-
-#define VARG_DEC(x,xs...) REVIVE(ARG_DEC) (xs##__VA_OPT__())
-
-#define VARG_MAP(f,xs...) REVIVE(VARG_MAP) __VA_OPT__(VARG_MAP_I(f,xs))
-#define VARG_MAP_I(f,x,xs...) REVIVE(VARG_MAP_I) f(x)__VA_OPT__(,VARG_MAP_I(f,xs))
-
-#define VARG_FOREACH(f,xs...) REVIVE(VARG_FOREACH) __VA_OPT__(VARG_FOREACH_I(f,xs))
-#define VARG_FOREACH_I(f,x,xs...) REVIVE(VARG_FOREACH_I) f(x) __VA_OPT__()
-
-#define APP_BRACKET(x) {x}
-
-PRINT_ERROR
-(VARG_MAP (APP_BRACKET, 1,2,3,4)
-)
-
 int Move::convertSpeedLeft(int p_speed){
     int speed = abs(p_speed);
     switch (this->currentSpeedMode)
