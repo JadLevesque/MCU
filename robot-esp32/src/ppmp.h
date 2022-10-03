@@ -49,14 +49,19 @@
 
 #define VARG_FOREACH(f,x,xs...) REVIVE(VARG_FOREACH) f(x) __VA_OPT__(VARG_FOREACH(f,xs))
 #define VARG_FOREACH_N(n,f,x,xs...) REVIVE(VARG_FOREACH_N) SCAN_N(n, f(x)) __VA_OPT__(VARG_FOREACH_N(n,f,xs))
-#define VARG_FOREACH_NAUTO(tf,x,xs...) REVIVE(VARG_FOREACH_NAUTO) FX(VARG_FOREACH_N, (tf, VARG_SEPARATE tf, x, xs))
+#define VARG_FOREACH_MAGIC(f,x,xs...) REVIVE(VARG_FOREACH_MAGIC) FN_APPLY(f, x) __VA_OPT__(VARG_FOREACH_MAGIC(f,xs))
+// TODO: fix VARG_FOREACH_NAUTO
+//#define VARG_FOREACH_NAUTO(tf,x,xs...) REVIVE(VARG_FOREACH_NAUTO) FX(VARG_FOREACH_N, (tf, VARG_SEPARATE tf, x, xs))
 
 #define VARG_FOLD(f,a,x,xs...) REVIVE(VARG_FOLD) __VA_OPT__(f(a,x),VARG_FOLD,(f,f(a,x),xs))
 
 #define VARG_SEPARATE(xs...) VARG_FOLD(SEPARATE,,xs)
 
+// TODO: define FN_APPLY
+//#define FN_APPLY(fn,xs...) REVIVE(FN_APPLY) EDIBLE_P(fn) 
 
-#define FN_APPLY(fn,xs...) REVIVE(FN_APPLY) EDIBLE_P(fn) 
+#define VARG_REVERSE(xs...) REVIVE(VARG_REVERSE) __VA_OPT__(VARG_REVERSE_I(,##xs))
+#define VARG_REVERSE_I(P,x,xs...) REVIVE(VARG_REVERSE_I) __VA_OPT__(VARG_REVERSE_I(,P##xs),)P##x
 
 
 #define FIRST_LETTER_LEFT L
@@ -64,3 +69,27 @@
 
 #define CAMELCASE_LEFT Left
 #define CAMELCASE_RIGHT Right
+
+#define XF(x,f) REVIVE(XF) f x
+#define PARENS_XF(x,f) REVIVE(PARENS_XF) (f x)
+
+// TODO: define FN_APPLY
+#define FN_APPLY(f,xs...) \
+REVIVE(FN_APPLY) \
+FX (SCAM \
+   ,EDIBLE_P (f) (FX (FN_APPLY_EDIBLE, ((xs), VARG_REVERSE f)) \
+                 ,f (xs) \
+                 ) \
+   )
+//
+
+#define FN_APPLY_EDIBLE(pxs,f,fs...) REVIVE(FN_APPLY_EDIBLE) FN_APPLY_EDIBLE_I (FX (FN_APPLY, (f, pxs)), ##fs)
+#define FN_APPLY_EDIBLE_I(pr,fs...) REVIVE(FN_APPLY_EDIBLE_I) EMPTY_P(fs) (VARG_AT_0, FN_APPLY_EDIBLE) (pr, fs)
+
+#define FN_APPLY_INEDIBLE(pxs,f) REVIVE(FN_APPLY_INEDIBLE) (f pxs)
+
+PRINT_ERROR
+(\n 
+FN_APPLY(((SCAM, SCAM)), ((~)))
+\n
+)
