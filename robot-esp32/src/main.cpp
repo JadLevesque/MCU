@@ -1,4 +1,5 @@
 #include <Arduino.h>
+<<<<<<< Updated upstream
 #include <Ps3Controller.h>
 
 int player = 0;
@@ -250,4 +251,16 @@ void loop()
     //     Serial.println("Pressing both the select and start buttons");
 
     delay(2000);
+=======
+#include "move.h"
+
+Move move;
+
+void setup() {
+
+}
+
+void loop() {
+
+>>>>>>> Stashed changes
 }
