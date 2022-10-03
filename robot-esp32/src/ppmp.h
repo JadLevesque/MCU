@@ -30,7 +30,9 @@
 #define IF_1(t,f...) REVIVE(IF_1) t##__VA_OPT__() 
 
 #define VARG_AT_0(a,...) REVIVE(VARG_AT_0) a
+#define VARG_AT_1(a,b,...) REVIVE(VARG_AT_1) b
 #define VARG_AT_2(a,b,c,...) REVIVE(VARG_AT_2) c
+#define VARG_AT_3(a,b,c,d,...) REVIVE(VARG_AT_3) d
 
 #define EDIBLE_P(x) FX(VARG_AT_2, (EDIBLE_TEST x,IF_1,IF_))
 #define EDIBLE_TEST(...) ,
@@ -73,10 +75,15 @@
 #define XF(x,f) REVIVE(XF) f x
 #define PARENS_XF(x,f) REVIVE(PARENS_XF) (f x)
 
-// TODO: define FN_APPLY
+/*!
+ * @def FN_APPLY
+ * Computes the application of the composed funtion `tf` (tree of functions) on `pxs` (tuple).
+ * 
+ */
+#if 0
 #define FN_APPLY(f,xs...) \
 REVIVE(FN_APPLY) \
-FX (SCAM \
+FX ( \
    ,EDIBLE_P (f) (FX (FN_APPLY_EDIBLE, ((xs), VARG_REVERSE f)) \
                  ,f (xs) \
                  ) \
@@ -85,11 +92,35 @@ FX (SCAM \
 
 #define FN_APPLY_EDIBLE(pxs,f,fs...) REVIVE(FN_APPLY_EDIBLE) FN_APPLY_EDIBLE_I (FX (FN_APPLY, (f, pxs)), ##fs)
 #define FN_APPLY_EDIBLE_I(pr,fs...) REVIVE(FN_APPLY_EDIBLE_I) EMPTY_P(fs) (VARG_AT_0, FN_APPLY_EDIBLE) (pr, fs)
+#endif
 
-#define FN_APPLY_INEDIBLE(pxs,f) REVIVE(FN_APPLY_INEDIBLE) (f pxs)
+// Either (Varg a -> Varg c) (Tree (Varg a -> Tuple b))
+// -> Tuple a
+// -> c
+#define FN_APPLY(tf, pxs) \
+REVIVE(FN_APPLY) \
+EDIBLE_P (tf) (FX (FN_APPLY_I, (pxs, VARG_REVERSE tf)) \
+              ,tf pxs \
+              )
+//
+
+#define FN_APPLY_I(pxs, f, fs...) \
+REVIVE(FN_APPLY_I) \
+EMPTY_P (fs) (VARG_AT_0, FN_APPLY_I) (f pxs, fs)
+
+
+// TARG_REVERSE (1,2,3) -> (3,2,1)
+#define TARG_REVERSE(xs...) REVIVE(TUPLE_REVERSE) (VARG_REVERSE (xs))
+// TUPLE_REVERSE ((1,2,3)) -> (3,2,1)
+#define TUPLE_REVERSE(t) REVIVE(TUPLE_REVERSE) (VARG_REVERSE t)
+
+
+
 
 PRINT_ERROR
 (\n 
-FN_APPLY(((SCAM, SCAM)), ((~)))
+FN_APPLY((VARG_AT_1), (1,2,3) )
+\n
+VARG_FOREACH_MAGIC ((TARG_REVERSE), (1,2,3), (4,5,6), (7,8,9))
 \n
 )
