@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "robot-esp32",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"random": "cpp"
+		}
+	}
+}
